@@ -27,6 +27,9 @@ public class GraphImages
 
 	public static void load()
 	{
+		summaryGeneral = "";
+		summaryMisc = "";
+		details = "";
 		try
 		{
 			int miscGraphWidth = (int) (800 * 0.6);
@@ -47,7 +50,7 @@ public class GraphImages
 
 		try
 		{
-			int dailyGraphHeight = 300;
+			int dailyGraphHeight = 500;
 			int day = 0;
 			while (true)
 			{
@@ -104,6 +107,38 @@ public class GraphImages
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+
+	public static int graphFileCount()
+	{
+		int count = 1;
+		try
+		{
+			int day = 0;
+			while (true)
+			{
+				File file = new File(PythonRunner.pythonLocation + "day" + day + ".png");
+				if (file.exists()) count += 1;
+				else break;
+				day += 1;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	public static void garbageCollect()
+	{
+		for (File file : new File(PythonRunner.pythonLocation).listFiles())
+		{
+			if (file.getName().endsWith(".png") || file.getName().endsWith(".csv") || file.getName().endsWith(".txt"))
+			{
+				if (!file.getName().startsWith("data.")) file.delete();
+			}
 		}
 	}
 }

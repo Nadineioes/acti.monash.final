@@ -151,8 +151,8 @@ public class GuiMain extends JPanel
 					{
 						GuiFrame.frame.clear();
 						GuiFrame.frame.addToFrame(new GuiMain());
-						GuiFrame.frame.revalidate();
 						GuiFrame.frame.paintAll(GuiFrame.frame.getGraphics());
+						GuiFrame.frame.revalidate();
 					}
 				}
 			}

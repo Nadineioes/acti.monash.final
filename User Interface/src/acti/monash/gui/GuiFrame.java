@@ -64,6 +64,7 @@ public class GuiFrame extends JFrame
 		this.contentPane = new JPanel();
 		this.contentPane.setBorder(null);
 		this.contentPane.setLayout(new BorderLayout(0, 0));
+		this.setLocationRelativeTo(null);
 		this.setContentPane(this.contentPane);
 
 		this.sheepBackgroundScaled = sheepBackground.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH);

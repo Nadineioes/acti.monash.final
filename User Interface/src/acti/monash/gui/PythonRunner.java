@@ -21,23 +21,23 @@ public class PythonRunner
 	private static boolean donePythonLoading = false;
 
 	public static JDialog progressDialog;
+	public static JLabel processLabel;
 
 	public PythonRunner()
 	{
-		JLabel msgLabel;
 		JProgressBar progressBar;
 		JPanel panel;
 
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setIndeterminate(true);
-		msgLabel = new JLabel("Processing Data...");
-		msgLabel.setOpaque(false);
+		processLabel = new JLabel("Processing Data...");
+		processLabel.setOpaque(false);
 
 		panel = new JPanel(new BorderLayout(5, 5));
-		panel.add(msgLabel, BorderLayout.PAGE_START);
+		panel.add(processLabel, BorderLayout.PAGE_START);
 		panel.add(progressBar, BorderLayout.CENTER);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		msgLabel.setBackground(panel.getBackground());
+		processLabel.setBackground(panel.getBackground());
 
 		progressDialog = new JDialog(GuiFrame.frame, "Acti | Monash", true);
 		progressDialog.getContentPane().add(panel);
@@ -49,10 +49,11 @@ public class PythonRunner
 
 	public void execute()
 	{
-
 		String errorMessage = "";
 		try
 		{
+			processLabel.setText("Processing Data...");
+			GraphImages.garbageCollect();
 			File crashFile = new File(pythonLocation + "crashes.txt");
 			File errorLog = new File(pythonLocation + "Error_Log.txt");
 			File statusFile = new File(pythonLocation + "ProgramStatus.txt");
@@ -84,9 +85,13 @@ public class PythonRunner
 				@Override
 				protected Object doInBackground() throws Exception
 				{
+					Thread.sleep(1000);
 					Process p = pb.start();
 					while (p.isAlive())
-						Thread.sleep(10);
+					{
+						processLabel.setText("Processing Graph " + GraphImages.graphFileCount());
+						Thread.sleep(1000);
+					}
 					this.publish();
 					this.done();
 					return null;
