@@ -51,9 +51,12 @@ for row in filedata:
         bluelight.append(row[bluelightCol])
 
 
+
 for act in range(0, len(actList)):
     if actList[act] == "nan":
         actList[act] = 0
+    else:
+        actList[act]=float(actList[act])
 
 activity = go.Scatter(
     x=datetimes,
@@ -67,8 +70,8 @@ for sleepindex in sleepIndList:
     #   str((((thing - 1) * (255 - 0)) / (5000 - 1)) + 0)
     colorList.append('rgba(' + str((sleepindex) * 255 / 10) + "," + str((sleepindex) * 255 / 10)+',255,1)')
 
-
-sleepIndList = [5000] * len(datetimes)
+maxact=max(actList)
+sleepIndList = [maxact+10] * len(datetimes)
 
 sleepindex = go.Bar(
             x=datetimes,
@@ -88,19 +91,20 @@ if bluelightCol!=-1:
             yaxis = "y2"
     )
     data.append(light)
-    layout = go.Layout(autosize = False, width = 20000, height = 700, showlegend=False,
-                       xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8),
-                       yaxis=dict(rangemode="tozero"),
+    layout = go.Layout(autosize = False, width = 20000, height = 700, title="Actigraph Over Full Time Period", showlegend=False,
+                       xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True),
+                       yaxis=dict(rangemode="tozero", showgrid=True),
                        yaxis2=dict(overlaying="y", anchor = "free", side="left", rangemode="tozero"))
-    layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=1200, height=500,
-                           xaxis=dict(autotick=False, showticklabels=False),
-                           yaxis=dict(rangemode="tozero", side="left"),
-                           yaxis2=dict(overlaying="y", side="right", rangemode="tozero"))
+    layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
+                           xaxis=dict(gridcolor="#ccc",autotick=False, showticklabels=False, showgrid=True, dtick=1800000, gridwidth=2),
+                           yaxis=dict(title="Activity", rangemode="tozero", side="left", showgrid=True),
+                           yaxis2=dict(title="Light (photons per square m)", overlaying="y", side="right", rangemode="tozero"))
 else:
-    layout = go.Layout(showlegend=False, autosize = False, width = 20000, height = 700,
-                   xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8))
-    layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=1200, height=500,
-                           xaxis=dict(autotick=False, showticklabels=False))
+    layout = go.Layout(showlegend=False, autosize = False, width = 20000, height = 700,title="Actigraph Over Full Time Period",
+                   xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True))
+    layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
+                           xaxis=dict(gridcolor="#ccc",autotick=False, showticklabels=False, dtick=1800000 ,showgrid=True, gridwidth=2),
+                           yaxis=dict(title="Activity", showgrid=True))
 
 
 print('plotting')
@@ -112,79 +116,87 @@ Image("adult.png")
 # day by day images
 
 going = True
-x=0
+n=0
 totalmin = (time.mktime(datetime.datetime.strptime(datetimes[-1], "%Y-%m-%d %H:%M:%S").timetuple())- time.mktime(datetime.datetime.strptime(datetimes[0], "%Y-%m-%d %H:%M:%S").timetuple()))/60
 
 
 if bluelightCol!=-1:
     while going:
-        if x+1440<totalmin:
+        if n+1440<totalmin:
             fig = go.Figure(data=[go.Bar(
-                x=datetimes[x:x+1440],
-                y=sleepIndList[x:x+1440],
-                marker=dict(color=colorList[x:x+1440]))
+                x=datetimes[n:n+1440],
+                y=[max(actList[n:n+1440])+10]*len(datetimes[n:n+1440]),
+                marker=dict(color=colorList[n:n+1440]))
             ,go.Scatter(
-                x=datetimes[x:x+1440],
-                y=actList[x:x+1440],
+                x=datetimes[n:n+1440],
+                y=actList[n:n+1440],
                 fill='tozeroy'),
             go.Scatter(
-                x=datetimes[x:x+1440],
-                y=bluelight[x:x+1440],
+                x=datetimes[n:n+1440],
+                y=bluelight[n:n+1440],
                 yaxis = "y2"
                 )], layout=layout2)
         else:
             fig = go.Figure(data=[go.Bar(
-                x=datetimes[x:],
-                y=sleepIndList[x:],
+                x=datetimes[n:],
+                y=[max(actList[n:])+10]*len(datetimes[n:]),
                 marker=dict(
-                color=colorList[x:])
+                color=colorList[n:])
             )
             ,go.Scatter(
-                x=datetimes[x:],
-                y=actList[x:],
+                x=datetimes[n:],
+                y=actList[n:],
                 fill='tozeroy'),
             go.Scatter(
-                x=datetimes[x:],
-                y=bluelight[x:],
+                x=datetimes[n:],
+                y=bluelight[n:],
                 yaxis = "y2"
                 )], layout=layout2)
             going = False
-        name = "day"+str(int(x/1440))+".png"
+        name = "day"+str(int(n/1440))+".png"
         py.image.save_as(fig,filename = name)
         Image(name)
-        print("plotted "+ str(int(x/1440)))
-        x += 1440
+        print("plotted "+ str(int(n/1440)))
+        n += 1440
 
 else:
     while going:
-        if x+1440<totalmin:
+        if n+1440<totalmin:
             fig = go.Figure(data=[go.Bar(
-                x=datetimes[x:x+1440],
-                y=sleepIndList[x:x+1440],
-                marker=dict(color=colorList[x:x+1440]))
+                x=datetimes[n:n+1440],
+                y=[max(actList[n:n+1440])+10]*len(datetimes[n:n+1440]),
+                marker=dict(color=colorList[n:n+1440]))
             ,go.Scatter(
-                x=datetimes[x:x+1440],
-                y=actList[x:x+1440],
+                x=datetimes[n:n+1440],
+                y=actList[n:n+1440],
                 fill='tozeroy')], layout=layout2)
         else:
             fig = go.Figure(data=[go.Bar(
-                x=datetimes[x:],
-                y=sleepIndList[x:],
+                x=datetimes[n:],
+                y=[max(actList[n:])+10]*len(datetimes[n:]),
                 marker=dict(
-                color=colorList[x:])
+                color=colorList[n:])
             )
             ,go.Scatter(
-                x=datetimes[x:],
-                y=actList[x:],
+                x=datetimes[n:],
+                y=actList[n:],
                 fill='tozeroy')],layout=layout2)
             going = False
-        name = "day"+str(int(x/1440))+".png"
+        name = "day"+str(int(n/1440))+".png"
         py.image.save_as(fig,filename = name)
         Image(name)
-        print("plotted "+ str(int(x/1440)))
-        x += 1440
+        print("plotted "+ str(int(n/1440)))
+        n += 1440
 
 f.close()
+
+time=filedata[0].split(",")[timeCol]
+date=filedata[0].split(",")[dateCol]
 out = open("starttime.txt", "w")
 out.write(filedata[0].split(",")[timeCol])
+for i in range(len(filedata)):
+    ndate = filedata[i].split(",")[dateCol]
+    if ndate != date:
+        date = ndate
+        out.write(date)
 out.close()
