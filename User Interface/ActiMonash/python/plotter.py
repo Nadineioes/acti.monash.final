@@ -79,7 +79,7 @@ sleepindex = go.Bar(
 
 data = [sleepindex, activity]
 
-margin = go.Margin(l=35,r=35,t=5,b=5, pad=0)
+margin = go.Margin(l=50,r=50,t=10,b=10, pad=0)
 
 if bluelightCol!=-1:
     light = go.Scatter(
