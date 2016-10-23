@@ -93,26 +93,30 @@ if bluelightCol!=-1:
     data.append(light)
     layout = go.Layout(autosize = False, width = 20000, height = 700, title="Actigraph Over Full Time Period", showlegend=False,
                        xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True),
-                       yaxis=dict(rangemode="tozero", showgrid=True),
-                       yaxis2=dict(overlaying="y", anchor = "free", side="left", rangemode="tozero"))
+                       yaxis=dict(zeroline=False, showticklabels=False),
+                       yaxis2=dict(overlaying="y", rangemode="tozero", showgrid=True),
+                       yaxis3=dict(overlaying="y2", anchor = "free", side="left", rangemode="tozero"))
     layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
-                           xaxis=dict(gridcolor="#ccc",autotick=False, showticklabels=False, showgrid=True, dtick=1800000, gridwidth=2),
-                           yaxis=dict(title="Activity", rangemode="tozero", side="left", showgrid=True),
-                           yaxis2=dict(title="Light (photons per square m)", overlaying="y", side="right", rangemode="tozero"))
+                           xaxis=dict(gridcolor="#999",autotick=False, showticklabels=False, showgrid=True, dtick=1800000, gridwidth=2),
+                           yaxis=dict(zeroline=False, showticklabels=False),
+                           yaxis2=dict(overlaying="y", title="Activity", rangemode="tozero", side="left", showgrid=True),
+                           yaxis3=dict(title="Light (photons per square m)", overlaying="y2", side="right", rangemode="tozero"))
 else:
     layout = go.Layout(showlegend=False, autosize = False, width = 20000, height = 700,title="Actigraph Over Full Time Period",
                    xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True))
     layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
-                           xaxis=dict(gridcolor="#ccc",autotick=False, showticklabels=False, dtick=1800000 ,showgrid=True, gridwidth=2),
-                           yaxis=dict(title="Activity", showgrid=True))
+                           xaxis=dict(gridcolor="#999",autotick=False, showticklabels=False, dtick=1800000 ,showgrid=True, gridwidth=2),
+                           yaxis=dict(zeroline=False, showticklabels=False),
+                            yaxis2=dict(overlaying="y", showgrid=True, title="Activity"))
 
 
 print('plotting')
 fig = go.Figure(data=data, layout=layout)
 
 py.image.save_as(fig, filename="full.png")
+
+Image("full.png")
 print("plotted full length")
-Image("adult.png")
 # day by day images
 
 going = True
@@ -130,11 +134,11 @@ if bluelightCol!=-1:
             ,go.Scatter(
                 x=datetimes[n:n+1440],
                 y=actList[n:n+1440],
-                fill='tozeroy'),
+                fill='tozeroy', yaxis="y2"),
             go.Scatter(
                 x=datetimes[n:n+1440],
                 y=bluelight[n:n+1440],
-                yaxis = "y2"
+                yaxis="y3"
                 )], layout=layout2)
         else:
             fig = go.Figure(data=[go.Bar(
@@ -146,11 +150,11 @@ if bluelightCol!=-1:
             ,go.Scatter(
                 x=datetimes[n:],
                 y=actList[n:],
-                fill='tozeroy'),
+                fill='tozeroy', yaxis="y2"),
             go.Scatter(
                 x=datetimes[n:],
                 y=bluelight[n:],
-                yaxis = "y2"
+                yaxis = "y3"
                 )], layout=layout2)
             going = False
         name = "day"+str(int(n/1440))+".png"
@@ -164,23 +168,25 @@ else:
         if n+1440<totalmin:
             fig = go.Figure(data=[go.Bar(
                 x=datetimes[n:n+1440],
-                y=[max(actList[n:n+1440])+10]*len(datetimes[n:n+1440]),
+                y=[max(actList[n:n+1440])]*len(datetimes[n:n+1440]),
                 marker=dict(color=colorList[n:n+1440]))
             ,go.Scatter(
                 x=datetimes[n:n+1440],
                 y=actList[n:n+1440],
-                fill='tozeroy')], layout=layout2)
+                fill='tozeroy',
+                yaxis="y2")], layout=layout2)
         else:
             fig = go.Figure(data=[go.Bar(
                 x=datetimes[n:],
-                y=[max(actList[n:])+10]*len(datetimes[n:]),
+                y=[max(actList[n:])]*len(datetimes[n:]),
                 marker=dict(
                 color=colorList[n:])
             )
             ,go.Scatter(
                 x=datetimes[n:],
                 y=actList[n:],
-                fill='tozeroy')],layout=layout2)
+                fill='tozeroy',
+                yaxis="y2")],layout=layout2)
             going = False
         name = "day"+str(int(n/1440))+".png"
         py.image.save_as(fig,filename = name)
