@@ -42,8 +42,8 @@ try:
     import CalculateSleepIndex
     CalculateSleepIndex.full_csv_second("sleepfile.csv")
 
-    import V05summarynadine
-    V05summarynadine.summary(name+"."+extension)
+    import summary
+    summary.summary(name+"."+extension)
 
     # uses "sleepindex.csv" to plot
     import plotter
