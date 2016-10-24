@@ -82,7 +82,7 @@ sleepindex = go.Bar(
 
 data = [sleepindex, activity]
 
-margin = go.Margin(l=50,r=50,t=10,b=10, pad=0)
+margin = go.Margin(l=50,r=50,t=10,b=20, pad=0)
 
 if bluelightCol!=-1:
     light = go.Scatter(
@@ -93,19 +93,17 @@ if bluelightCol!=-1:
     data.append(light)
     layout = go.Layout(autosize = False, width = 20000, height = 700, title="Actigraph Over Full Time Period", showlegend=False,
                        xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True),
-                       yaxis=dict(zeroline=False, showticklabels=False),
-                       yaxis2=dict(overlaying="y", rangemode="tozero", showgrid=True),
-                       yaxis3=dict(overlaying="y2", anchor = "free", side="left", rangemode="tozero"))
+                       yaxis=dict(title="Activity", zeroline=False, showticklabels=False),
+                       yaxis2=dict(overlaying="y", anchor = "free", side="left", rangemode="tozero"))
     layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
-                           xaxis=dict(gridcolor="#999",autotick=False, showticklabels=False, showgrid=True, dtick=1800000, gridwidth=2),
-                           yaxis=dict(zeroline=False, showticklabels=False),
-                           yaxis2=dict(overlaying="y", title="Activity", rangemode="tozero", side="left", showgrid=True),
-                           yaxis3=dict(title="Light (photons per square m)", overlaying="y2", side="right", rangemode="tozero"))
+                           xaxis=dict(gridcolor="#999", showgrid=True, dtick=1800000, gridwidth=2),
+                           yaxis=dict(title="Activity", zeroline=False, showticklabels=False),
+                           yaxis2=dict(title="Light (photons per square m)", overlaying="y", side="right", rangemode="tozero"))
 else:
     layout = go.Layout(showlegend=False, autosize = False, width = 20000, height = 700,title="Actigraph Over Full Time Period",
                    xaxis=dict(dtick=10800000, tickwidth=1, ticklen=8, showgrid=True))
     layout2 = go.Layout(showlegend=False, margin=margin, autosize = False, width=2500, height=500,
-                           xaxis=dict(gridcolor="#999",autotick=False, showticklabels=False, dtick=1800000 ,showgrid=True, gridwidth=2),
+                           xaxis=dict(gridcolor="#999", dtick=1800000 ,showgrid=True, gridwidth=2),
                            yaxis=dict(zeroline=False, showticklabels=False),
                             yaxis2=dict(overlaying="y", showgrid=True, title="Activity"))
 
@@ -123,7 +121,6 @@ going = True
 n=0
 totalmin = (time.mktime(datetime.datetime.strptime(datetimes[-1], "%Y-%m-%d %H:%M:%S").timetuple())- time.mktime(datetime.datetime.strptime(datetimes[0], "%Y-%m-%d %H:%M:%S").timetuple()))/60
 
-
 if bluelightCol!=-1:
     while going:
         if n+1440<totalmin:
@@ -134,11 +131,11 @@ if bluelightCol!=-1:
             ,go.Scatter(
                 x=datetimes[n:n+1440],
                 y=actList[n:n+1440],
-                fill='tozeroy', yaxis="y2"),
+                fill='tozeroy', yaxis="y"),
             go.Scatter(
                 x=datetimes[n:n+1440],
                 y=bluelight[n:n+1440],
-                yaxis="y3"
+                yaxis="y2"
                 )], layout=layout2)
         else:
             fig = go.Figure(data=[go.Bar(
@@ -150,11 +147,11 @@ if bluelightCol!=-1:
             ,go.Scatter(
                 x=datetimes[n:],
                 y=actList[n:],
-                fill='tozeroy', yaxis="y2"),
+                fill='tozeroy', yaxis="y"),
             go.Scatter(
                 x=datetimes[n:],
                 y=bluelight[n:],
-                yaxis = "y3"
+                yaxis = "y2"
                 )], layout=layout2)
             going = False
         name = "day"+str(int(n/1440))+".png"
