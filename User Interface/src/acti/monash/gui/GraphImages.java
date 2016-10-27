@@ -25,6 +25,8 @@ public class GraphImages
 	public static String summaryMisc = "";
 	public static String details = "";
 
+	public static String[][] summaryData = new String[4][9];
+
 	public static void load()
 	{
 		summaryGeneral = "";
@@ -50,7 +52,7 @@ public class GraphImages
 
 		try
 		{
-			int dailyGraphHeight = 500;
+			int dailyGraphHeight = 300;
 			int day = 0;
 			while (true)
 			{
@@ -108,6 +110,31 @@ public class GraphImages
 		{
 			e.printStackTrace();
 		}
+
+		try
+		{
+			BufferedReader br = new BufferedReader(new FileReader(new File(PythonRunner.pythonLocation + "summary.csv")));
+			String line;
+			br.readLine();
+			br.readLine();
+			int index = 0;
+			while ((line = br.readLine()) != null)
+			{
+				String[] splitLine = line.split(",");
+				for (int i = 0; i < splitLine.length; i++)
+				{
+					summaryData[index][i] = splitLine[i];
+					if (index == 0 || i == 0) summaryData[index][i] = "<html><b>" + summaryData[index][i] + "</b></html>";
+				}
+
+				index += 1;
+			}
+			br.close();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public static int graphFileCount()
@@ -140,5 +167,10 @@ public class GraphImages
 				if (!file.getName().startsWith("data.")) file.delete();
 			}
 		}
+	}
+
+	public class SummaryData
+	{
+
 	}
 }

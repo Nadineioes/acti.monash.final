@@ -49,7 +49,7 @@ public class GuiFrame extends JFrame
 
 	public GuiFrame()
 	{
-		this.setMinimumSize(new Dimension(800, 300));
+		this.setMinimumSize(new Dimension(980, 300));
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

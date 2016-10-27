@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -29,7 +30,7 @@ import javax.swing.border.EmptyBorder;
 public class GuiMain extends JPanel
 {
 	public static Color panelColor = new Color(255, 255, 255, 210);
-	public static Color panelColorGrey = new Color(230, 230, 230, 210);
+	public static Color panelColorGrey = new Color(230, 230, 230, 230);
 	public static Color panelColorLightGrey = new Color(240, 240, 240, 230);
 	public static Color greenColor = new Color(50, 150, 0, 255);
 	public static Color darkGreenColor = new Color(10, 120, 0, 255);
@@ -37,8 +38,8 @@ public class GuiMain extends JPanel
 	public static Font smallTextFontBold = new Font("Segoe UI", Font.BOLD, 13);
 	public static Font largeTitleFont = new Font("Segoe UI", Font.PLAIN, 25);
 
-	public GuiButton[] tabButtons = new GuiButton[3];
-	public JPanel[] tabPanels = new JPanel[3];
+	public GuiButton[] tabButtons = new GuiButton[4];
+	public JPanel[] tabPanels = new JPanel[4];
 
 	public JPanel mainGraphPanel;
 	public JPanel graphContainerGeneral;
@@ -213,9 +214,11 @@ public class GuiMain extends JPanel
 		this.tabButtons[0].setText("Data by Day", smallTextFont, Color.WHITE);
 		this.tabButtons[1].setText("Light Data", smallTextFont, Color.WHITE);
 		this.tabButtons[2].setText("Details", smallTextFont, Color.WHITE);
+		this.tabButtons[3].setText("Summary", smallTextFont, Color.WHITE);
 		tabs.add(this.tabButtons[0]);
 		tabs.add(this.tabButtons[1]);
 		tabs.add(this.tabButtons[2]);
+		tabs.add(this.tabButtons[3]);
 
 		JPanel tabBar = new JPanel();
 		tabBar.setBackground(greenColor);
@@ -234,7 +237,7 @@ public class GuiMain extends JPanel
 		// this.mainGraphPanel.setOpaque(false);
 		this.mainGraphPanel.setLayout(new BorderLayout(0, 0));
 
-		this.scrollPaneViews = new JPanel[3];
+		this.scrollPaneViews = new JPanel[4];
 		for (int i = 0; i < this.tabPanels.length; i++)
 		{
 			this.tabPanels[i] = new JPanel();
@@ -313,7 +316,46 @@ public class GuiMain extends JPanel
 		this.detailsLabel.setOpaque(false);
 		this.detailsLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 		this.detailsLabel.setVerticalAlignment(SwingConstants.TOP);
-		this.scrollPaneViews[2].add(this.detailsLabel, BorderLayout.WEST);
+		this.scrollPaneViews[2].add(this.detailsLabel, BorderLayout.CENTER);
+
+		this.scrollPaneViews[3].setLayout(new BoxLayout(this.scrollPaneViews[3], BoxLayout.Y_AXIS));
+		this.scrollPaneViews[3].setBorder(new EmptyBorder(0, 5, 0, 0));
+		JLabel summaryTitleLabel = new JLabel("Sleep Summary");
+		summaryTitleLabel.setFont(this.smallTextFontBold);
+		summaryTitleLabel.setForeground(Color.BLACK);
+		summaryTitleLabel.setBorder(new EmptyBorder(10, 5, 10, 0));
+		this.scrollPaneViews[3].add(summaryTitleLabel);
+
+		JPanel summaryTable = new JPanel();
+		summaryTable.setAlignmentX(Component.LEFT_ALIGNMENT);
+		summaryTable.setBackground(Color.WHITE);
+		summaryTable.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, this.panelColorGrey));
+		summaryTable.setLayout(new GridLayout(4, 9));
+		summaryTable.setMinimumSize(new Dimension(670, 180));
+		summaryTable.setMaximumSize(new Dimension(670, 180));
+		summaryTable.setPreferredSize(new Dimension(670, 180));
+
+		try
+		{
+
+			for (int r = 0; r < 4; r++)
+			{
+				for (int c = 0; c < 9; c++)
+				{
+					JLabel label = new JLabel();
+					int top = (r == 0) ? 0 : 1;
+					if (c != 0) label.setBorder(BorderFactory.createMatteBorder(top, 1, 0, 0, this.panelColorGrey));
+					else label.setBorder(BorderFactory.createMatteBorder(top, 0, 0, 0, this.panelColorGrey));
+					label.setHorizontalAlignment(SwingConstants.CENTER);
+					label.setText(GraphImages.summaryData[r][c]);
+					summaryTable.add(label);
+				}
+			}
+			this.scrollPaneViews[3].add(summaryTable);
+		}
+		catch (Exception e)
+		{
+		}
 
 		this.setTab(0);
 	}
@@ -346,8 +388,8 @@ public class GuiMain extends JPanel
 			{
 				this.tabButtons[i].setBackground(greenColor);
 				this.mainGraphPanel.add(this.tabPanels[i], BorderLayout.CENTER);
-				this.tabPanels[i].revalidate();
 				this.tabPanels[i].repaint();
+				this.tabPanels[i].revalidate();
 				GuiFrame.frame.revalidate();
 				GuiFrame.frame.repaint();
 			}
@@ -376,6 +418,13 @@ public class GuiMain extends JPanel
 		if (tab == 2)
 		{
 			this.summaryLabel.setText("<html>Details regarding the participant and collection of the data.</html>");
+			this.summaryLabel.setMinimumSize(new Dimension(190, 0));
+			this.summaryLabel.setPreferredSize(new Dimension(190, 0));
+			this.summaryLabel.setMaximumSize(new Dimension(190, 0));
+		}
+		if (tab == 3)
+		{
+			this.summaryLabel.setText("<html>Sleep summary.</html>");
 			this.summaryLabel.setMinimumSize(new Dimension(190, 0));
 			this.summaryLabel.setPreferredSize(new Dimension(190, 0));
 			this.summaryLabel.setMaximumSize(new Dimension(190, 0));
